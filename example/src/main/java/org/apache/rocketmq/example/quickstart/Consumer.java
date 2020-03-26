@@ -34,6 +34,14 @@ public class Consumer {
 
         /*
          * Instantiate with specified consumer group name.
+         *
+         * group_name用于一组消费者，提高并发能力
+         *
+         * group_name需要和消息模式结合使用
+         *      Clustering：一组消费者合力消费一个topic的所有消息
+         *      Broadcasting：该组下的每个消费者都会消费到topic下所有的消息。等于是一整个topic多次分发
+         *
+         *
          */
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("please_rename_unique_group_name_4");
 
@@ -48,7 +56,7 @@ public class Consumer {
          * }
          * </pre>
          */
-
+        consumer.setNamesrvAddr("127.0.0.1:9876");
         /*
          * Specify where to start in case the specified consumer group is a brand new one.
          */
