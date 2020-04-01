@@ -64,6 +64,9 @@ public class Consumer {
 
         /*
          * Subscribe one more more topics to consume.
+         *
+         * topic ：预定义好的topic name
+         * tag： null||* 为所有topic消息
          */
         consumer.subscribe("TopicTest", "*");
 
