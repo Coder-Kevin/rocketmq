@@ -54,7 +54,9 @@ public class NamesrvStartup {
     public static NamesrvController main0(String[] args) {
 
         try {
+            // 构建 namesrv控制器
             NamesrvController controller = createNamesrvController(args);
+            // 启动namesrv 主要是控制器的初始化和启动两个方法
             start(controller);
             String tip = "The Name Server boot success. serializeType=" + RemotingCommand.getSerializeTypeConfigInThisServer();
             log.info(tip);
@@ -82,6 +84,11 @@ public class NamesrvStartup {
         final NamesrvConfig namesrvConfig = new NamesrvConfig();
         final NettyServerConfig nettyServerConfig = new NettyServerConfig();
         nettyServerConfig.setListenPort(9876);
+
+
+        /**
+         * -c 用来指定配置文件的位置
+         */
         if (commandLine.hasOption('c')) {
             String file = commandLine.getOptionValue('c');
             if (file != null) {
@@ -98,6 +105,10 @@ public class NamesrvStartup {
             }
         }
 
+
+        /**
+         * -p   用来打印配置项调试使用   执行-p就会结束程序
+         */
         if (commandLine.hasOption('p')) {
             InternalLogger console = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_CONSOLE_NAME);
             MixAll.printObjectProperties(console, namesrvConfig);
@@ -112,6 +123,7 @@ public class NamesrvStartup {
             System.exit(-2);
         }
 
+        // 初始化日志组件   读取环境下配置的文件/conf/logback_namesrv.xml
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(lc);
@@ -136,13 +148,14 @@ public class NamesrvStartup {
         if (null == controller) {
             throw new IllegalArgumentException("NamesrvController is null");
         }
-
+        // 初始化成功继续执行
         boolean initResult = controller.initialize();
         if (!initResult) {
             controller.shutdown();
             System.exit(-3);
         }
 
+        // 加入钩子   优雅关闭？！
         Runtime.getRuntime().addShutdownHook(new ShutdownHookThread(log, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -151,6 +164,7 @@ public class NamesrvStartup {
             }
         }));
 
+        // 启动namesrv
         controller.start();
 
         return controller;

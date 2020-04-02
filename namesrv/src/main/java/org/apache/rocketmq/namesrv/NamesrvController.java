@@ -38,19 +38,28 @@ import org.apache.rocketmq.remoting.netty.NettyServerConfig;
 import org.apache.rocketmq.remoting.netty.TlsSystemConfig;
 import org.apache.rocketmq.srvutil.FileWatchService;
 
-
+/**
+ * Namesrv控制器    启动反正是靠它
+ */
 public class NamesrvController {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
 
+    // Namesrv配置 主要是包含环境配置中rocketmq相关的  比如：logback_namesrv.xml
     private final NamesrvConfig namesrvConfig;
 
+    // netty服务配置   注意  listenPort是9876
     private final NettyServerConfig nettyServerConfig;
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
         "NSScheduledThread"));
+
+    // kvConfig是什么？todo
     private final KVConfigManager kvConfigManager;
+
+    // 主要是处理  broker  topic的处理
     private final RouteInfoManager routeInfoManager;
 
+    // namesrv netty 服务器
     private RemotingServer remotingServer;
 
     private BrokerHousekeepingService brokerHousekeepingService;
@@ -73,25 +82,32 @@ public class NamesrvController {
         this.configuration.setStorePathFromConfig(this.namesrvConfig, "configStorePath");
     }
 
+    // 初始化
     public boolean initialize() {
 
         this.kvConfigManager.load();
 
+        // 创建netty server
         this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
+
 
         this.remotingExecutor =
             Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(), new ThreadFactoryImpl("RemotingExecutorThread_"));
 
         this.registerProcessor();
 
+        // 启动定时任务10秒执行一次
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
             public void run() {
+                // 扫描不活动的broker
                 NamesrvController.this.routeInfoManager.scanNotActiveBroker();
             }
         }, 5, 10, TimeUnit.SECONDS);
 
+
+        // 定期打印 kv Config   配置信息
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
@@ -141,6 +157,7 @@ public class NamesrvController {
         return true;
     }
 
+    // name srv核心逻辑就在往netty server上注册这个处理器  DefaultRequestProcessor
     private void registerProcessor() {
         if (namesrvConfig.isClusterTest()) {
 

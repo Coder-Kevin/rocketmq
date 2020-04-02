@@ -47,12 +47,26 @@ import org.apache.rocketmq.remoting.common.RemotingUtil;
 
 public class RouteInfoManager {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
+
+    // 2分钟 broker通道的过期时间
     private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;
+
+    // 读写锁    这个是干啥用的   需要细细看看   todo
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    // topic
     private final HashMap<String/* topic */, List<QueueData>> topicQueueTable;
+
+    //
     private final HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
+
+
     private final HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
+
+
     private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
+
+
     private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
 
     public RouteInfoManager() {
@@ -426,6 +440,7 @@ public class RouteInfoManager {
         return null;
     }
 
+    // brokerLiveTable 中移除不活动的broker     上次更新时间+120s<当前时间
     public void scanNotActiveBroker() {
         Iterator<Entry<String, BrokerLiveInfo>> it = this.brokerLiveTable.entrySet().iterator();
         while (it.hasNext()) {
@@ -752,10 +767,21 @@ public class RouteInfoManager {
     }
 }
 
+/**
+ * 存活borker信息
+ * todo  后面补充具体是干啥  怎么更新里面的数据  现在写个笼统的
+ */
 class BrokerLiveInfo {
+    // 最近一次更新时间
     private long lastUpdateTimestamp;
+
+    // 里面有俩属性    时间戳  和  原子long
     private DataVersion dataVersion;
+
+    // 这个大概是namesrv netty服务端  与  broker客户端简历的通道？！
     private Channel channel;
+
+    // ip+端口？
     private String haServerAddr;
 
     public BrokerLiveInfo(long lastUpdateTimestamp, DataVersion dataVersion, Channel channel,
