@@ -79,7 +79,7 @@ public class DefaultRequestProcessor extends AsyncNettyRequestProcessor implemen
         }
 
 
-        // 根据收到的不同状态来处理
+        // 根据收到的不同状态来处理   这是nameserver的核心逻辑
         switch (request.getCode()) {
             case RequestCode.PUT_KV_CONFIG:
                 return this.putKVConfig(ctx, request);

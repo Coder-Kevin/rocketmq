@@ -779,6 +779,7 @@ class BrokerLiveInfo {
     private DataVersion dataVersion;
 
     // 这个大概是namesrv netty服务端  与  broker客户端简历的通道？！
+    // 需要保持长连接    长链接的好处
     private Channel channel;
 
     // ip+端口？

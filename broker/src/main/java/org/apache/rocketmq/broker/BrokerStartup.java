@@ -121,6 +121,7 @@ public class BrokerStartup {
                 messageStoreConfig.setAccessMessageInMemoryMaxRatio(ratio);
             }
 
+            // -c 指定配置文件位置
             if (commandLine.hasOption('c')) {
                 String file = commandLine.getOptionValue('c');
                 if (file != null) {
@@ -129,6 +130,7 @@ public class BrokerStartup {
                     properties = new Properties();
                     properties.load(in);
 
+                    // conf/broker.conf 完成对下面赋值   主要是namesrv 客户端netty配置   broker netty服务端配置 消息存储位置配置等
                     properties2SystemEnv(properties);
                     MixAll.properties2Object(properties, brokerConfig);
                     MixAll.properties2Object(properties, nettyServerConfig);
@@ -147,6 +149,8 @@ public class BrokerStartup {
                 System.exit(-2);
             }
 
+
+            // 校验nameserver address 是否为SocketAddress
             String namesrvAddr = brokerConfig.getNamesrvAddr();
             if (null != namesrvAddr) {
                 try {
@@ -162,6 +166,7 @@ public class BrokerStartup {
                 }
             }
 
+            // 根据broker role 看是主节点 还是从节点    master=0   slave>0否则报错
             switch (messageStoreConfig.getBrokerRole()) {
                 case ASYNC_MASTER:
                 case SYNC_MASTER:
@@ -178,11 +183,14 @@ public class BrokerStartup {
                     break;
             }
 
+            // todo  不知道什么意思
             if (messageStoreConfig.isEnableDLegerCommitLog()) {
                 brokerConfig.setBrokerId(-1);
             }
 
             messageStoreConfig.setHaListenPort(nettyServerConfig.getListenPort() + 1);
+
+            // 注意环境文件配置/rocketmq/conf/logback_broker.xml   初始日志对象
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(lc);
