@@ -43,7 +43,7 @@ public class Consumer {
          *
          *
          */
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("please_rename_unique_group_name_4");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("product_consumer_group");
 
         /*
          * Specify name server addresses.
@@ -68,7 +68,7 @@ public class Consumer {
          * topic ：预定义好的topic name
          * tag： null||* 为所有topic消息
          */
-        consumer.subscribe("TopicTest", "*");
+        consumer.subscribe("product", "*");
 
         /*
          *  Register callback to execute on arrival of messages fetched from brokers.
