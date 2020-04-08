@@ -54,16 +54,16 @@ public class RouteInfoManager {
     // 读写锁    这个是干啥用的   需要细细看看   todo
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    // topic
+    // topic存在在哪些broker上
     private final HashMap<String/* topic */, List<QueueData>> topicQueueTable;
 
-    //
+    // 所有broker信息
     private final HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
 
-
+    // 每个集群包含的broker
     private final HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
 
-
+    // 存活broker节点
     private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
 
 
@@ -769,7 +769,10 @@ public class RouteInfoManager {
 
 /**
  * 存活borker信息
- * todo  后面补充具体是干啥  怎么更新里面的数据  现在写个笼统的
+ * 定时任务10s扫描一次来更新：
+ * NamesrvController.this.routeInfoManager.scanNotActiveBroker();
+ *
+ *
  */
 class BrokerLiveInfo {
     // 最近一次更新时间

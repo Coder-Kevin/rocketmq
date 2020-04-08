@@ -20,13 +20,17 @@ public class NettyServerConfig implements Cloneable {
     private int listenPort = 8888;
     private int serverWorkerThreads = 8;
     private int serverCallbackExecutorThreads = 0;
-    private int serverSelectorThreads = 3;
-    private int serverOnewaySemaphoreValue = 256;
-    private int serverAsyncSemaphoreValue = 64;
+    private int serverSelectorThreads = 3; // Netty IO 线程个数，Selector 所在的线程个数，也就主从 Reactor 模型中的从 Reactor 线程数量
+    private int serverOnewaySemaphoreValue = 256; // 服务端单向信号量
+    private int serverAsyncSemaphoreValue = 64; // 服务端异步信号量
+
+    // 通道空闲时间 120s
     private int serverChannelMaxIdleTimeSeconds = 120;
 
     private int serverSocketSndBufSize = NettySystemConfig.socketSndbufSize;
     private int serverSocketRcvBufSize = NettySystemConfig.socketRcvbufSize;
+
+    // 是否使用PooledByteBuf(可重用，缓存ByteBuf)
     private boolean serverPooledByteBufAllocatorEnable = true;
 
     /**
