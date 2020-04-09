@@ -50,7 +50,7 @@ public class Producer {
          */
         producer.start();
 
-        for (int i = 0; i < 1; i++) {
+//        for (int i = 0; i < 1; i++) {
             try {
 
                 /*
@@ -58,7 +58,7 @@ public class Producer {
                  */
                 Message msg = new Message("product" /* Topic */,
                     "ProductA" /* Tag */,
-                    ("产品 " + i).getBytes(RemotingHelper.DEFAULT_CHARSET) /* Message body */
+                    ("产品 " + 0).getBytes(RemotingHelper.DEFAULT_CHARSET) /* Message body */
                 );
 
                 /*
@@ -71,7 +71,7 @@ public class Producer {
                 e.printStackTrace();
                 Thread.sleep(1000);
             }
-        }
+//        }
 
         /*
          * Shut down once the producer instance is not longer in use.

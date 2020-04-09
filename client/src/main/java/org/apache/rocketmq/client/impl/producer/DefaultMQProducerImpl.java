@@ -705,9 +705,14 @@ public class DefaultMQProducerImpl implements MQProducerInner {
             null).setResponseCode(ClientErrorCode.NOT_FOUND_TOPIC_EXCEPTION);
     }
 
+    /**
+     * 如果namesrv宕机，如果namesrv集群宕机，本地有缓存依旧是可以发送消息的   除非全部宕机并且本地无缓存
+     * @param topic
+     * @return
+     */
     private TopicPublishInfo tryToFindTopicPublishInfo(final String topic) {
 
-        /**
+        /*
          * 本地缓存获取topic路由信息，没有就从nameserver拉取，再缓存到本地
          */
         TopicPublishInfo topicPublishInfo = this.topicPublishInfoTable.get(topic);
@@ -727,6 +732,20 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         }
     }
 
+    /**
+     * 发送消息的核心方法
+     * @param msg
+     * @param mq
+     * @param communicationMode
+     * @param sendCallback
+     * @param topicPublishInfo
+     * @param timeout
+     * @return
+     * @throws MQClientException
+     * @throws RemotingException
+     * @throws MQBrokerException
+     * @throws InterruptedException
+     */
     private SendResult sendKernelImpl(final Message msg,
         final MessageQueue mq,
         final CommunicationMode communicationMode,

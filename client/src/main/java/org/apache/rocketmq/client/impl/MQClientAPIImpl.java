@@ -493,6 +493,18 @@ public class MQClientAPIImpl {
         return null;
     }
 
+    /**
+     *
+     * @param addr
+     * @param brokerName
+     * @param msg
+     * @param timeoutMillis
+     * @param request
+     * @return
+     * @throws RemotingException
+     * @throws MQBrokerException
+     * @throws InterruptedException
+     */
     private SendResult sendMessageSync(
         final String addr,
         final String brokerName,
@@ -1366,6 +1378,8 @@ public class MQClientAPIImpl {
         GetRouteInfoRequestHeader requestHeader = new GetRouteInfoRequestHeader();
         requestHeader.setTopic(topic);
 
+        // 利用和namesrv的长连接 发送GET_ROUTEINTO_BY_TOPIC进行获取
+        // 这个处理是在namesrv下面的DefaultRequestProcessor类方法processRequest
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ROUTEINTO_BY_TOPIC, requestHeader);
 
         RemotingCommand response = this.remotingClient.invokeSync(null, request, timeoutMillis);
