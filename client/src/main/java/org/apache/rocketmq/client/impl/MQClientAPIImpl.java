@@ -418,6 +418,21 @@ public class MQClientAPIImpl {
 
     }
 
+    /**
+     *
+     * @param addr brokerip地址
+     * @param brokerName broker名字
+     * @param msg 消息对象
+     * @param requestHeader
+     * @param timeoutMillis
+     * @param communicationMode 同步/异步模式
+     * @param context
+     * @param producer
+     * @return
+     * @throws RemotingException
+     * @throws MQBrokerException
+     * @throws InterruptedException
+     */
     public SendResult sendMessage(
         final String addr,
         final String brokerName,
@@ -512,6 +527,9 @@ public class MQClientAPIImpl {
         final long timeoutMillis,
         final RemotingCommand request
     ) throws RemotingException, MQBrokerException, InterruptedException {
+        /**
+         * 调用进入broker进行消息存储
+         */
         RemotingCommand response = this.remotingClient.invokeSync(addr, request, timeoutMillis);
         assert response != null;
         return this.processSendResponse(brokerName, msg, response);
