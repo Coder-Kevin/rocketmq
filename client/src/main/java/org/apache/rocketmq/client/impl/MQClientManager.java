@@ -45,7 +45,14 @@ public class MQClientManager {
     }
 
     public MQClientInstance getOrCreateMQClientInstance(final ClientConfig clientConfig, RPCHook rpcHook) {
+        // clientId = clientIP + instance + unitname可选
+        // 解决同台机器部署两个服务    就是吧instance转化为进程号  解决重复问题
         String clientId = clientConfig.buildMQClientId();
+
+        /**
+         * MQClientInstance 封装了网络处理API
+         * 是生产者 消费者与 namesrv和broker打交道的网络通道
+         */
         MQClientInstance instance = this.factoryTable.get(clientId);
         if (null == instance) {
             instance =

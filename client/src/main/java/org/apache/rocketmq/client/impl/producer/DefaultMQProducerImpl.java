@@ -183,12 +183,15 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                 this.checkConfig();
 
                 /**
-                 * 会把instanceName转换成pid   默认是DEFAULT
+                 * 会把instanceName转换成进程号   默认是DEFAULT
                  */
                 if (!this.defaultMQProducer.getProducerGroup().equals(MixAll.CLIENT_INNER_PRODUCER_GROUP)) {
                     this.defaultMQProducer.changeInstanceNameToPID();
                 }
 
+                /**
+                 * MQClientInstance jvm下只存在一个实例
+                 */
                 this.mQClientFactory = MQClientManager.getInstance().getOrCreateMQClientInstance(this.defaultMQProducer, rpcHook);
 
                 boolean registerOK = mQClientFactory.registerProducer(this.defaultMQProducer.getProducerGroup(), this);
