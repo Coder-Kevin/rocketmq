@@ -1390,7 +1390,7 @@ public class MQClientAPIImpl {
 
         // 利用和namesrv的长连接 发送GET_ROUTEINTO_BY_TOPIC进行获取
         // 这个处理是在namesrv下面的DefaultRequestProcessor类方法processRequest
-        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ROUTEINTO_BY_TOPIC, requestHeader);
+        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ROUTEINFO_BY_TOPIC, requestHeader);
 
         RemotingCommand response = this.remotingClient.invokeSync(null, request, timeoutMillis);
         assert response != null;
