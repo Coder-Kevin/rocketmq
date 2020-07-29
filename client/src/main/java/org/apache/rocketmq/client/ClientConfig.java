@@ -98,6 +98,11 @@ public class ClientConfig {
         }
     }
 
+    /**
+     *
+     * @param resource Message.getTopic
+     * @return
+     */
     public String withNamespace(String resource) {
         return NamespaceUtil.wrapNamespace(this.getNamespace(), resource);
     }

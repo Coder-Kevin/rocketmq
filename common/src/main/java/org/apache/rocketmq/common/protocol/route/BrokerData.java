@@ -27,7 +27,7 @@ import org.apache.rocketmq.common.MixAll;
  * broker 数据信息  主要是  broker.conf配置的信息
  */
 public class BrokerData implements Comparable<BrokerData> {
-    private String cluster; // 集群名？todo  待确认
+    private String cluster; // 集群名
     private String brokerName; // broker名字
 
     // borker id  和 broker address

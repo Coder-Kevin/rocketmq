@@ -932,11 +932,21 @@ public class MQClientInstance {
         }
     }
 
+    /**
+     * producerTable来装group，producer对象
+     *
+     * 不存在放入成功，返回true
+     * 其他情况返回false
+     * @param group
+     * @param producer
+     * @return
+     */
     public boolean registerProducer(final String group, final DefaultMQProducerImpl producer) {
         if (null == group || null == producer) {
             return false;
         }
 
+        // putIfAbsent已存在的值，不放入
         MQProducerInner prev = this.producerTable.putIfAbsent(group, producer);
         if (prev != null) {
             log.warn("the producer group[{}] exist already.", group);

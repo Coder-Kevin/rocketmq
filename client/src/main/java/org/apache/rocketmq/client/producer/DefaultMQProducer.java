@@ -505,6 +505,7 @@ public class DefaultMQProducer extends ClientConfig implements MQProducer {
     public SendResult send(Message msg, MessageQueueSelector selector, Object arg)
         throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
         msg.setTopic(withNamespace(msg.getTopic()));
+        //arg selector选择消息队列使用
         return this.defaultMQProducerImpl.send(msg, selector, arg);
     }
 

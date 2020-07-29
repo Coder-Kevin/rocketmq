@@ -175,11 +175,20 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         this.start(true);
     }
 
+    /**
+     * Producer 启动执行
+     * @param startFactory
+     * @throws MQClientException
+     */
     public void start(final boolean startFactory) throws MQClientException {
         switch (this.serviceState) {
+            // 启动初始为 CREATE_JUST
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
 
+                /**
+                 * 检查producer_group_name
+                 */
                 this.checkConfig();
 
                 /**
@@ -196,6 +205,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
                 boolean registerOK = mQClientFactory.registerProducer(this.defaultMQProducer.getProducerGroup(), this);
                 if (!registerOK) {
+                    // 注册失败抛错，同一个producer group只能存在一个
                     this.serviceState = ServiceState.CREATE_JUST;
                     throw new MQClientException("The producer group[" + this.defaultMQProducer.getProducerGroup()
                         + "] has been created before, specify another name please." + FAQUrl.suggestTodo(FAQUrl.GROUP_NAME_DUPLICATE_URL),
@@ -710,7 +720,9 @@ public class DefaultMQProducerImpl implements MQProducerInner {
     }
 
     /**
-     * 如果namesrv宕机，如果namesrv集群宕机，本地有缓存依旧是可以发送消息的   除非全部宕机并且本地无缓存
+     * 如果namesrv宕机，如果namesrv集群宕机，本地有缓存依旧是可以发送消息的
+     * 除非全部宕机并且本地无缓存
+     *
      * @param topic
      * @return
      */
@@ -1131,11 +1143,13 @@ public class DefaultMQProducerImpl implements MQProducerInner {
      */
     public SendResult send(Message msg, MessageQueueSelector selector, Object arg)
         throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+        // SendMsgTimeout 默认30s
         return send(msg, selector, arg, this.defaultMQProducer.getSendMsgTimeout());
     }
 
     public SendResult send(Message msg, MessageQueueSelector selector, Object arg, long timeout)
         throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+        // 消息模式同步
         return this.sendSelectImpl(msg, selector, arg, CommunicationMode.SYNC, null, timeout);
     }
 
@@ -1148,6 +1162,10 @@ public class DefaultMQProducerImpl implements MQProducerInner {
     ) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
         long beginStartTime = System.currentTimeMillis();
         this.makeSureStateOK();
+
+        /**
+         * 主要校验msg是否为空，最大长度；topic的合法性校验，是否为非法的topic
+         */
         Validators.checkMessage(msg, this.defaultMQProducer);
 
         TopicPublishInfo topicPublishInfo = this.tryToFindTopicPublishInfo(msg.getTopic());

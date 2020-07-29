@@ -84,8 +84,8 @@ public class Validators {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message is null");
         }
         // topic
-        Validators.checkTopic(msg.getTopic());
-        Validators.isNotAllowedSendTopic(msg.getTopic());
+        Validators.checkTopic(msg.getTopic());// 校验topic合法性 字母大小写+数组+_
+        Validators.isNotAllowedSendTopic(msg.getTopic());// RMQ_SYS_SCHEDULE_TOPIC 内置topic  不被允许用户使用
 
         // body
         if (null == msg.getBody()) {
