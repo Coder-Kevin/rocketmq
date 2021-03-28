@@ -85,11 +85,8 @@ public class MQFaultStrategy {
                         pos = 0;
                     MessageQueue mq = tpInfo.getMessageQueueList().get(pos);
                     // end  利用ThreadLocal 存取上一次messageQueue角标   使用轮询机制获取下一个messageQueue
-
-                    if (latencyFaultTolerance.isAvailable(mq.getBrokerName())) {// 判断消息队列是否可用
-                        if (null == lastBrokerName || mq.getBrokerName().equals(lastBrokerName))
-                            return mq;
-                    }
+                    if (latencyFaultTolerance.isAvailable(mq.getBrokerName()))// 判断消息队列是否可用
+                        return mq;
                 }
 
                 final String notBestBroker = latencyFaultTolerance.pickOneAtLeast();
